@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EventBook - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="dashboard-styles.css" />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+      <div class="container">
+        <a class="navbar-brand" href="index.html">EventBook</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Events</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Contact</a>
+            </li>
+          </ul>
+          <div class="d-flex">
+            <button id="logout-button" class="btn btn-outline-primary">Logout</button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container py-4">
+      <div class="dashboard-container">
+        <div class="row">
+          <div class="col-md-3 mb-4">
+            <!-- Sidebar -->
+            <div class="card sidebar">
+              <div class="card-body">
+                <div class="user-info text-center mb-4">
+                  <img src="https://via.placeholder.com/80" class="rounded-circle mb-3" alt="User Avatar">
+                  <h5>John Doe</h5>
+                  <p class="text-muted">john.doe@example.com</p>
+                </div>
+                <hr>
+                <ul class="nav flex-column nav-pills">
+                  <li class="nav-item">
+                    <a class="nav-link active" href="#my-events">My Events</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#saved-events">Saved Events</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#profile">Profile Settings</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#billing">Billing Information</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-9">
+            <!-- Dashboard Content -->
+            <div class="card">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">My Events</h4>
+                <div>
+                  <button class="btn btn-sm btn-outline-primary me-2">Upcoming</button>
+                  <button class="btn btn-sm btn-outline-secondary">Past</button>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="row g-4">
+                  <div class="col-md-6">
+                    <div class="card event-card h-100">
+                      <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                          <span class="badge bg-success">Confirmed</span>
+                          <span class="event-date">May 25, 2025</span>
+                        </div>
+                        <h5 class="card-title">Tech Workshop 2025</h5>
+                        <p class="card-text">Learn the latest technologies and network with industry professionals.</p>
+                        <p class="mb-1"><strong>Time:</strong> 10:00 AM - 4:00 PM</p>
+                        <p><strong>Location:</strong> Tech Hub Center</p>
+                        <div class="d-grid gap-2">
+                          <button class="btn btn-outline-primary btn-sm">View Ticket</button>
+                          <button class="btn btn-outline-danger btn-sm">Cancel Booking</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="card event-card h-100">
+                      <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                          <span class="badge bg-success">Confirmed</span>
+                          <span class="event-date">June 15, 2025</span>
+                        </div>
+                        <h5 class="card-title">Summer Music Festival</h5>
+                        <p class="card-text">Experience an amazing lineup of artists at our annual summer music festival.</p>
+                        <p class="mb-1"><strong>Time:</strong> 2:00 PM - 11:00 PM</p>
+                        <p><strong>Location:</strong> Central Park</p>
+                        <div class="d-grid gap-2">
+                          <button class="btn btn-outline-primary btn-sm">View Ticket</button>
+                          <button class="btn btn-outline-danger btn-sm">Cancel Booking</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="mt-4">
+                  <h5>Recommended for you</h5>
+                  <div class="row g-4 mt-2">
+                    <div class="col-md-6">
+                      <div class="card event-card h-100">
+                        <img src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?q=80&w=2070" class="card-img-top" alt="Art Exhibition">
+                        <div class="card-body">
+                          <span class="badge bg-info mb-2">Art</span>
+                          <h5 class="card-title">Modern Art Exhibition</h5>
+                          <p class="card-text">Explore a fascinating collection of modern art from artists around the world.</p>
+                          <p><strong>Date:</strong> August 10, 2025</p>
+                          <button class="btn btn-outline-primary w-100">Book Now</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="card event-card h-100">
+                        <img src="https://images.unsplash.com/photo-1471967183320-ee018f6e114a?q=80&w=2071" class="card-img-top" alt="Business Conference">
+                        <div class="card-body">
+                          <span class="badge bg-warning mb-2">Business</span>
+                          <h5 class="card-title">Business Leadership Conference</h5>
+                          <p class="card-text">Connect with industry leaders and learn effective business strategies.</p>
+                          <p><strong>Date:</strong> September 5, 2025</p>
+                          <button class="btn btn-outline-primary w-100">Book Now</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-5 py-4">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6 text-center text-md-start">
+            <p>© 2025 EventBook. All rights reserved.</p>
+          </div>
+          <div class="col-md-6 text-center text-md-end">
+            <div class="social-links">
+              <a href="#" class="me-2">Facebook</a>
+              <a href="#" class="me-2">Twitter</a>
+              <a href="#" class="me-2">Instagram</a>
+              <a href="#">LinkedIn</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast">
+      <div class="toast-content">
+        <h3 id="toast-title" class="toast-title"></h3>
+        <p id="toast-message" class="toast-message"></p>
+      </div>
+      <button id="toast-close" class="toast-close">&times;</button>
+    </div>
+    
+    <!-- Required Lovable script tag -->
+    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="dashboard.js"></script>
+  </body>
+</html>
