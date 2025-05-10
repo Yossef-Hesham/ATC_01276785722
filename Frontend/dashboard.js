@@ -1,87 +1,64 @@
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  // Change ID selectors to match your HTML
+  const email = document.getElementById('email').value; // Ensure input has id="email"
+  const password = document.getElementById('password').value;
 
-// DOM Elements
-const logoutButton = document.getElementById('logout-button');
-const toast = document.getElementById('toast');
-const toastTitle = document.getElementById('toast-title');
-const toastMessage = document.getElementById('toast-message');
-const toastClose = document.getElementById('toast-close');
+  try {
+    const response = await fetch('http://127.0.0.1:8000/api/login/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        email: email,  // Key must be 'email' (lowercase)
+        password: password 
+      }),
+    });
 
-// Logout functionality
-logoutButton.addEventListener('click', () => {
-  // In a real app, you would clear authentication tokens here
-  showToast('Logged out', 'You have been successfully logged out.', 'success');
-  
-  // Clear the session storage flag
-  sessionStorage.removeItem('fromLogin');
-  
-  // Redirect to login page after a short delay
-  setTimeout(() => {
-    window.location.href = 'index.html';
-  }, 1000);
-});
-
-// Event handlers for dashboard elements
-document.querySelectorAll('.nav-link').forEach(link => {
-  link.addEventListener('click', function(e) {
-    if (this.getAttribute('href').startsWith('#')) {
-      e.preventDefault();
-      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-      this.classList.add('active');
+    if (response.ok) {
+      const data = await response.json();  // Get token from response
+      sessionStorage.setItem('authToken', data.token);
+      sessionStorage.setItem('userData', JSON.stringify(data));
+      
+      showToast('Login Successful', 'Redirecting...', 'success');
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 1000);
+    } else {
+      const error = await response.json();
+      showToast('Login Failed', error.detail || 'Invalid credentials', 'error');
     }
-  });
-});
-
-// Add click handlers for booking buttons
-document.querySelectorAll('.btn').forEach(button => {
-  if (button.textContent.trim() === 'Book Now') {
-    button.addEventListener('click', () => {
-      showToast('Booking Successful', 'Event has been added to your calendar.', 'success');
-    });
-  }
-  if (button.textContent.trim() === 'View Ticket') {
-    button.addEventListener('click', () => {
-      showToast('Ticket Viewer', 'Ticket functionality is not implemented in this demo.', 'success');
-    });
-  }
-  if (button.textContent.trim() === 'Cancel Booking') {
-    button.addEventListener('click', () => {
-      showToast('Cancellation', 'Booking cancellation is not implemented in this demo.', 'error');
-    });
+  } catch (err) {
+    showToast('Error', 'Network or server issue.', 'error');
   }
 });
 
-// Toast functions
-function showToast(title, message, type = 'success') {
-  toastTitle.textContent = title;
-  toastMessage.textContent = message;
-  toast.className = 'toast show ' + type;
+document.getElementById('register-form').addEventListener('submit', async (e) => {
+
+  e.preventDefault();
+  const username = document.getElementById('username').value;
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  const isAdmin = document.getElementById('is-admin-checkbox')?.checked;
+  const url = isAdmin ? 'http://127.0.0.1:8000/api/admin/register/' : 'http://127.0.0.1:8000/api/user/register/';
   
-  // Auto hide after 5 seconds
-  setTimeout(() => {
-    hideToast();
-  }, 5000);
-}
 
-function hideToast() {
-  toast.classList.remove('show');
-}
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
 
-// Close toast on click
-toastClose.addEventListener('click', hideToast);
-
-// Check if user is logged in
-function checkAuth() {
-  // For demo: just check if we were redirected from login
-  const fromLogin = sessionStorage.getItem('fromLogin');
-  if (!fromLogin) {
-    // Not authenticated, redirect to login
-    showToast('Authentication Required', 'Please log in to access the dashboard.', 'error');
-    setTimeout(() => {
-      window.location.href = 'index.html';
-    }, 2000);
+    if (res.ok) {
+      showToast('Success', 'Registered successfully.', 'success');
+    } else {
+      const err = await res.json();
+      showToast('Registration Error', err.detail || 'Try again.', 'error');
+    }
+  } catch (err) {
+    showToast('Error', 'Network/server issue.', 'error');
   }
-}
+});
 
-// Run auth check when page loads
-// Uncomment for real authentication check
-// checkAuth();
+
+checkAuth();  // place this at the end of your script

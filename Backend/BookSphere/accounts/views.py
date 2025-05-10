@@ -12,6 +12,7 @@ from .serializers import (
 )
 
 
+from .serializers import AdminRegistrationSerializer
 
 class UserRegistrationView(generics.CreateAPIView):
     serializer_class = UserRegistrationSerializer
@@ -28,12 +29,13 @@ class CustomLoginView(ObtainAuthToken):
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(
-            data=request.data, 
+            data=request.data,
             context={'request': request}
         )
         serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data
-        token, _ = Token.objects.get_or_create(user=user)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        
         return Response({
             'token': token.key,
             'user_id': user.pk,

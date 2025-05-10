@@ -25,12 +25,13 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 SECRET_KEY = 'django-insecure-c=@uo@7v9i%^st2%vyv^&ha&da6jv!m88527oy@x)#vmkdz8##'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
+DEBUG = True
 ALLOWED_HOSTS = []
 
-
+CORS_ALLOW_ALL_ORIGINS = True 
 # Application definition
+SECURE_SSL_REDIRECT = False
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -43,13 +44,19 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
-    'django_cleanup',
+    # 'django_cleanup',
     'accounts',
     'events',
     'bookings',
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'your_app.backends.EmailAuthBackend',
+]
+
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
