@@ -1,11 +1,11 @@
 from django.urls import path
 from .views import (
-    Filter_by_cat, EventListView
+    Update_Delete_View, Create_Read_View, BookedEventListView
 )
 
 urlpatterns = [
 
-    path('filter/<int:pk>/', Filter_by_cat.as_view(),name='filter-list-by-category'),
-    path('create/', EventListView.as_view(), name='event-list'),
-    
+    path('filter/<int:pk>/', Update_Delete_View.as_view(),name='filter-list-by-category'),
+    path('create/', Create_Read_View.as_view(), name='event-list'),
+    path('book/<int:pk>', BookedEventListView.as_view(), name='event-list'),
 ]

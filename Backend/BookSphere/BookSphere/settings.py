@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-c=@uo@7v9i%^st2%vyv^&ha&da6jv!m88527oy@x)#vmkdz8##
 # SECURITY WARNING: don't run with debug turned on in production!
 
 DEBUG = True  # Ensure debug mode is enabled for development
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']  # Ensure localhost is allowed
+ALLOWED_HOSTS = []  # Ensure localhost is allowed
 
 CORS_ALLOW_ALL_ORIGINS = True 
 # Application definition
@@ -52,13 +52,13 @@ INSTALLED_APPS = [
 ]
 
 
-# REST_FRAMEWORK = {
-#     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
-# }
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+}
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
-    'your_app.backends.EmailAuthBackend',
+    'accounts.backends.EmailAuthBackend',
 ]
 
 MIDDLEWARE = [

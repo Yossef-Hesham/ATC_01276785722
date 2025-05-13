@@ -10,3 +10,7 @@ urlpatterns = [
     path('admin/register/', AdminRegistrationView.as_view(), name='admin-register'),
     path('login/', CustomLoginView.as_view(), name='login'),
     ]
+
+
+
+# i wanna to make IS_book to True when the user book the event

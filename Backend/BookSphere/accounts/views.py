@@ -17,11 +17,10 @@ from .serializers import AdminRegistrationSerializer
 
 class UserRegistrationView(generics.CreateAPIView):
     serializer_class = UserRegistrationSerializer
-    permission_classes = [permissions.AllowAny]
+    # permission_classes = [permissions.AllowAny]
 
 class AdminRegistrationView(generics.CreateAPIView):
     serializer_class = AdminRegistrationSerializer
-    permission_classes = [permissions.IsAdminUser]
 
 
 
