@@ -26,15 +26,15 @@ SECRET_KEY = 'django-insecure-c=@uo@7v9i%^st2%vyv^&ha&da6jv!m88527oy@x)#vmkdz8##
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-DEBUG = True
-ALLOWED_HOSTS = []
+DEBUG = True  # Ensure debug mode is enabled for development
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']  # Ensure localhost is allowed
 
 CORS_ALLOW_ALL_ORIGINS = True 
 # Application definition
 SECURE_SSL_REDIRECT = False
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+    'django.contrib.admin',  # Ensure admin app is included
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     'rest_framework',
+    'django_filters',
     'rest_framework.authtoken',
     'corsheaders',
     # 'django_cleanup',
@@ -49,6 +50,11 @@ INSTALLED_APPS = [
     'events',
     'bookings',
 ]
+
+
+# REST_FRAMEWORK = {
+#     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+# }
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -59,7 +65,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
+    'django.middleware.common.CommonMiddleware',  # Ensure this middleware is included
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',

@@ -1,5 +1,6 @@
 from django.shortcuts import render
 
+from rest_framework import generics
 # Create your views here.
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
@@ -8,7 +9,7 @@ from rest_framework.authtoken.models import Token
 from .serializers import (
     UserRegistrationSerializer,
     AdminRegistrationSerializer,
-    LoginSerializer
+    LoginSerializer,
 )
 
 
@@ -43,3 +44,5 @@ class CustomLoginView(ObtainAuthToken):
             'email': user.email,
             'user_type': user.user_type
         })
+        
+

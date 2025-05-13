@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (
     UserRegistrationView,
     AdminRegistrationView,
-    CustomLoginView
+    CustomLoginView, 
 )
 
 urlpatterns = [

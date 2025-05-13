@@ -72,3 +72,4 @@ class AdminRegistrationSerializer(serializers.ModelSerializer):
             is_staff=True,
             **validated_data
         )
+        
