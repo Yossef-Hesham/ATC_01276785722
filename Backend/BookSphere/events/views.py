@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django_filters.rest_framework import DjangoFilterBackend
+# from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, filters
 from rest_framework import permissions
 from rest_framework.pagination import PageNumberPagination
