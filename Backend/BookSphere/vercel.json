@@ -1,13 +1,13 @@
 {
     "builds": [{
-        "src": "Backend/BookSphere/wsgi.py",
+        "src": "BookSphere/wsgi.py",
         "use": "@vercel/python",
         "config": { "maxLambdaSize": "15mb", "runtime": "python3.9" }
     }],
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "Backend/BookSphere/wsgi.py"
+            "dest": "BookSphere/wsgi.py"
         }
     ]
 }
