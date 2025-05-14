@@ -28,7 +28,19 @@ SECRET_KEY = 'django-insecure-c=@uo@7v9i%^st2%vyv^&ha&da6jv!m88527oy@x)#vmkdz8##
 DEBUG = True
 
 ALLOWED_HOSTS = ['.vercel.app']
+CORS_ALLOWED_ORIGINS = [
+    'https://127.0.0.1:8000',
+    'https://localhost:8000',
+    'https://*.vercel.app',
+    # 'https://bookevent-nine.vercel.app/',
+]
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://127.0.0.1:8000',
+    'https://localhost:8000',
+    'https://*.vercel.app',
+    'https://bookevent-nine.vercel.app/',
+]
 
 # Application definition
 
@@ -46,7 +58,6 @@ INSTALLED_APPS = [
     'django_cleanup',
     'accounts',
     'events',
-    'bookings',
 ]
 
 MIDDLEWARE = [
