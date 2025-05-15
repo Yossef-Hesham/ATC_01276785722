@@ -52,7 +52,9 @@ CSRF_TRUSTED_ORIGINS = [
 
 
 REST_FRAMEWORK = {
-    
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',  # JWT support
+    ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
@@ -75,6 +77,7 @@ INSTALLED_APPS = [
     'django_cleanup',
     'accounts',
     'events',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
