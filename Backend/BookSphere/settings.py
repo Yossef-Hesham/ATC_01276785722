@@ -39,15 +39,15 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'bookevent-production.up.railway.app'
 
 CORS_ALLOWED_ORIGINS = [
     'https://bookevent-production.up.railway.app',
-    'http://localhost:3000',
-    'http://127.0.0.1:9000'
+    'https://127.0.0.1:8000',
+    'https://localhost:8000',
 ]
 
 
 CSRF_TRUSTED_ORIGINS = [
     'https://bookevent-production.up.railway.app',
-    "http://localhost:3000",
-    "http://127.0.0.1:9000",
+    'https://127.0.0.1:8000',
+    'https://localhost:8000',
 ]
 
 
