@@ -36,7 +36,23 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 
 ALLOWED_HOSTS = ['localhost', '127.0.1', 'bookevent-production.up.railway.app']
 
-CSRF_TRUSTED_ORIGINS = ['https://bookevent-production.up.railway.app']
+
+CORS_ALLOWED_ORIGINS = [
+    'https://bookevent-production.up.railway.app',
+    'http://localhost:3000',
+    'http://127.0.0.1:9000'
+]
+
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://bookevent-production.up.railway.app',
+    "http://localhost:3000",
+    "http://127.0.0.1:9000",
+]
+
+
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Application definition
 
