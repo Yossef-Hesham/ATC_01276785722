@@ -34,7 +34,7 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.1', 'bookevent-production.up.railway.app']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'bookevent-production.up.railway.app']
 
 
 CORS_ALLOWED_ORIGINS = [
@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     'rest_framework',
+    'drf_spectacular', 
     'rest_framework.authtoken',
     'corsheaders',
     'django_cleanup',
