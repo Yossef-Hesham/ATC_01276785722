@@ -51,13 +51,37 @@ class LoginSerializer(serializers.Serializer):
             code='authorization'
         )
 
+CustomUser = get_user_model()
 class UserRegistrationSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
+    password = serializers.CharField(
+        write_only=True,
+        style={'input_type': 'password'}  # Better for frontend rendering
+    )
+    email = serializers.EmailField(required=True)  # Explicit email field
 
     class Meta:
         model = CustomUser
         fields = ('username', 'email', 'password')
-    
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        
+        # Case-insensitive username check
+        if CustomUser.objects.filter(username__iexact=attrs['username']).exists():
+            raise serializers.ValidationError(
+                {'username': 'This username is already taken.'}
+            )
+        
+        # Case-insensitive email check (critical addition)
+        if CustomUser.objects.filter(email__iexact=attrs['email']).exists():
+            raise serializers.ValidationError(
+                {'email': 'This email is already registered.'}
+            )
+        
+        # Normalize email to lowercase
+        attrs['email'] = attrs['email'].lower().strip()
+        return attrs
+
     def create(self, validated_data):
         return CustomUser.objects.create_user(
             username=validated_data['username'],
