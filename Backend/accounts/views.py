@@ -24,6 +24,7 @@ class AdminRegistrationView(generics.CreateAPIView):
 
 
 
+
 class CustomLoginView(ObtainAuthToken):
     serializer_class = LoginSerializer
 
@@ -39,9 +40,7 @@ class CustomLoginView(ObtainAuthToken):
         return Response({
             'token': token.key,
             'user_id': user.pk,
-            'username': user.username,
             'email': user.email,
-            'user_type': user.user_type
+            # Add other user fields as needed
         })
-        
 

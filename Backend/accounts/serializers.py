@@ -2,9 +2,10 @@ from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework import permissions, generics
 from .models import CustomUser
+from django.contrib.auth import get_user_model
 
 
-
+User = get_user_model()
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(style={'input_type': 'password'}, write_only=True)
@@ -14,28 +15,41 @@ class LoginSerializer(serializers.Serializer):
         password = attrs.get('password')
 
         if email and password:
-            # Authenticate using email as username
-            user = authenticate(
+            # Find user by email (replaces the need for EmailAuthBackend)
+            try:
+                user = User.objects.get(email__iexact=email)
+            except User.DoesNotExist:
+                raise serializers.ValidationError(
+                    'No account found with this email', 
+                    code='authorization'
+                )
+
+            # Authenticate using default backend
+            auth_user = authenticate(
                 request=self.context.get('request'),
-                username=email,  # Treat email as username
+                username=user.username,  # Use username for standard auth
                 password=password
             )
 
-            if not user:
-                msg = 'Unable to log in with provided credentials.'
-                raise serializers.ValidationError(msg, code='authorization')
+            if not auth_user:
+                raise serializers.ValidationError(
+                    'Invalid password', 
+                    code='authorization'
+                )
 
-            if not user.is_active:
-                msg = 'User account is disabled.'
-                raise serializers.ValidationError(msg, code='authorization')
+            if not auth_user.is_active:
+                raise serializers.ValidationError(
+                    'User account is disabled', 
+                    code='authorization'
+                )
 
-        else:
-            msg = 'Must include "email" and "password".'
-            raise serializers.ValidationError(msg, code='authorization')
+            attrs['user'] = auth_user
+            return attrs
 
-        attrs['user'] = user
-        return attrs
-    
+        raise serializers.ValidationError(
+            'Must include "email" and "password"',
+            code='authorization'
+        )
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
