@@ -5,11 +5,32 @@ export interface User {
   role: 'user' | 'admin';
 }
 
+export enum EventCategory {
+  SOCIAL = 'social',
+  PROFESSIONAL = 'professional',
+  CULTURAL = 'cultural',
+  SPORTS = 'sports'
+}
+
+export const EventCategoryLabels: Record<EventCategory, string> = {
+  [EventCategory.SOCIAL]: 'Social Events (Parties, reunions, weddings)',
+  [EventCategory.PROFESSIONAL]: 'Professional Events (Conferences, workshops)',
+  [EventCategory.CULTURAL]: 'Cultural Events (Concerts, art exhibitions)',
+  [EventCategory.SPORTS]: 'Sports Events (Marathons, tournaments)'
+};
+
+export const EventCategoryImages: Record<EventCategory, string> = {
+  [EventCategory.SOCIAL]: 'https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg',
+  [EventCategory.PROFESSIONAL]: 'https://images.pexels.com/photos/2582937/pexels-photo-2582937.jpeg',
+  [EventCategory.CULTURAL]: 'https://images.pexels.com/photos/1190297/pexels-photo-1190297.jpeg',
+  [EventCategory.SPORTS]: 'https://images.pexels.com/photos/46798/the-ball-stadion-football-the-pitch-46798.jpeg'
+};
+
 export interface Event {
   id: string;
   name: string;
   description: string;
-  category: string;
+  category: EventCategory;
   date: string;
   venue: string;
   price: number;

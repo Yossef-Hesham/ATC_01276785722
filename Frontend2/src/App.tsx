@@ -29,7 +29,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { state } = useAuth();
   
   if (!state.isAuthenticated) {
-    // Redirect to login page if not authenticated
     return <Navigate to="/login" replace state={{ from: window.location }} />;
   }
   
@@ -41,12 +40,10 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const { state } = useAuth();
   
   if (!state.isAuthenticated) {
-    // Redirect to login page if not authenticated
     return <Navigate to="/login" replace state={{ from: window.location }} />;
   }
   
   if (state.user?.role !== 'admin') {
-    // Redirect to home page if not an admin
     return <Navigate to="/" replace />;
   }
   
@@ -55,12 +52,12 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
 
 function App() {
   return (
-    <AuthProvider>
-      <ThemeProvider>
-        <LanguageProvider>
-          <EventProvider>
-            <BookingProvider>
-              <Router>
+    <Router>
+      <AuthProvider>
+        <ThemeProvider>
+          <LanguageProvider>
+            <EventProvider>
+              <BookingProvider>
                 <Routes>
                   <Route path="/" element={<Layout />}>
                     <Route index element={<HomePage />} />
@@ -94,12 +91,12 @@ function App() {
                     </Route>
                   </Route>
                 </Routes>
-              </Router>
-            </BookingProvider>
-          </EventProvider>
-        </LanguageProvider>
-      </ThemeProvider>
-    </AuthProvider>
+              </BookingProvider>
+            </EventProvider>
+          </LanguageProvider>
+        </ThemeProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 

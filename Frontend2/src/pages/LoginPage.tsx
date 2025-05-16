@@ -11,7 +11,7 @@ import Button from '../components/UI/Button';
 import Alert from '../components/UI/Alert';
 
 const loginSchema = z.object({
-  username: z.string().min(1, 'Username is required'),
+  email: z.string().min(1, 'Email is required').email('Invalid email format'),
   password: z.string().min(1, 'Password is required')
 });
 
@@ -24,8 +24,6 @@ const LoginPage: React.FC = () => {
   const location = useLocation();
   
   const [showPassword, setShowPassword] = useState(false);
-  
-  // Get redirect location from state if available
   const from = location.state?.from?.pathname || '/';
   
   const {
@@ -37,11 +35,7 @@ const LoginPage: React.FC = () => {
   });
   
   const onSubmit = async (data: LoginFormValues) => {
-    await login(data.username, data.password);
-    // After successful login, redirect to the page user was trying to access
-    if (!state.error) {
-      navigate(from);
-    }
+    await login(data.email, data.password);
   };
   
   const togglePasswordVisibility = () => {
@@ -73,23 +67,23 @@ const LoginPage: React.FC = () => {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
             <label 
-              htmlFor="username" 
+              htmlFor="email" 
               className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
             >
-              {translations['auth.username']}
+              {translations['auth.email'] || 'Email'}
             </label>
             <input
-              id="username"
-              type="text"
-              {...register('username')}
+              id="email"
+              type="email"
+              {...register('email')}
               className={`
                 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500
                 dark:bg-gray-700 dark:border-gray-600 dark:text-white
-                ${errors.username ? 'border-red-500 dark:border-red-500' : 'border-gray-300'}
+                ${errors.email ? 'border-red-500 dark:border-red-500' : 'border-gray-300'}
               `}
             />
-            {errors.username && (
-              <p className="mt-1 text-sm text-red-500">{errors.username.message}</p>
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
             )}
           </div>
           

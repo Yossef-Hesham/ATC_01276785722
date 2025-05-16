@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -18,8 +18,16 @@ const registerSchema = z.object({
     .email('Invalid email address'),
   password: z.string()
     .min(6, 'Password must be at least 6 characters'),
-  role: z.enum(['user', 'admin']),
-  secretKey: z.string().optional()
+  secretKey: z.string().optional(),
+  role: z.enum(['user', 'admin'])
+}).superRefine((data, ctx) => {
+  if (data.role === 'admin' && !data.secretKey) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['secretKey'],
+      message: 'Secret key is required for admin registration'
+    });
+  }
 });
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
@@ -28,46 +36,49 @@ const RegisterPage: React.FC = () => {
   const { register: registerUser, state } = useAuth();
   const { translations } = useLanguage();
   const navigate = useNavigate();
+  const location = useLocation();
   
   const [showPassword, setShowPassword] = useState(false);
-  const [registrationType, setRegistrationType] = useState<'user' | 'admin'>('user');
+  const defaultRole = location.pathname.includes('admin/register') ? 'admin' : 'user';
+  const [registrationType, setRegistrationType] = useState<'user' | 'admin'>(defaultRole);
   
   const {
     register,
     handleSubmit,
     formState: { errors },
-    watch
+    watch,
+    setValue
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      role: 'user'
+      role: defaultRole
     }
   });
-  
-  const watchRole = watch('role');
-  
+
   const onSubmit = async (data: RegisterFormValues) => {
-    await registerUser(
-      data.username, 
-      data.email, 
-      data.password, 
-      data.role === 'admin' ? data.secretKey : undefined
+    const success = await registerUser(
+      data.username,
+      data.email,
+      data.password,
+      data.role === 'admin' ? data.secretKey : undefined,
+      data.role
     );
     
-    // After successful registration, redirect to login
-    if (!state.error) {
-      navigate('/login');
+    if (success) {
+      navigate(data.role === 'admin' ? '/admin' : '/');
     }
   };
-  
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-  
+
   const handleRoleChange = (role: 'user' | 'admin') => {
     setRegistrationType(role);
+    setValue('role', role);
+    setValue('secretKey', '');
   };
-  
+
   return (
     <div className="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 mt-8">
       <motion.div
@@ -76,9 +87,15 @@ const RegisterPage: React.FC = () => {
         transition={{ duration: 0.5 }}
       >
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold">{translations['auth.register']}</h1>
+          <h1 className="text-2xl font-bold">
+            {registrationType === 'admin' 
+              ? translations['auth.registerAdmin'] || 'Admin Registration'
+              : translations['auth.register'] || 'Register'}
+          </h1>
           <p className="text-gray-600 dark:text-gray-300 mt-2">
-            Create a new account to book events
+            {registrationType === 'admin'
+              ? 'Create a new admin account'
+              : 'Create a new user account'}
           </p>
         </div>
         
@@ -89,41 +106,43 @@ const RegisterPage: React.FC = () => {
             className="mb-6" 
           />
         )}
-        
-        <div className="mb-6">
-          <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            {translations['auth.registerAs']}
-          </p>
-          <div className="flex space-x-4">
-            <button
-              type="button"
-              onClick={() => handleRoleChange('user')}
-              className={`
-                flex-1 py-2 px-4 rounded-md flex items-center justify-center
-                ${registrationType === 'user' 
-                  ? 'bg-purple-600 text-white' 
-                  : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200'}
-              `}
-            >
-              <User size={18} className="mr-2" />
-              {translations['auth.registerAsUser']}
-            </button>
-            <button
-              type="button"
-              onClick={() => handleRoleChange('admin')}
-              className={`
-                flex-1 py-2 px-4 rounded-md flex items-center justify-center
-                ${registrationType === 'admin' 
-                  ? 'bg-purple-600 text-white' 
-                  : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200'}
-              `}
-            >
-              <ShieldCheck size={18} className="mr-2" />
-              {translations['auth.registerAsAdmin']}
-            </button>
+
+        {!location.pathname.includes('admin/register') && (
+          <div className="mb-6">
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {translations['auth.registerAs'] || 'Register as'}
+            </p>
+            <div className="flex space-x-4">
+              <button
+                type="button"
+                onClick={() => handleRoleChange('user')}
+                className={`
+                  flex-1 py-2 px-4 rounded-md flex items-center justify-center
+                  ${registrationType === 'user' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200'}
+                `}
+              >
+                <User size={18} className="mr-2" />
+                {translations['auth.registerAsUser'] || 'User'}
+              </button>
+              <button
+                type="button"
+                onClick={() => handleRoleChange('admin')}
+                className={`
+                  flex-1 py-2 px-4 rounded-md flex items-center justify-center
+                  ${registrationType === 'admin' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200'}
+                `}
+              >
+                <ShieldCheck size={18} className="mr-2" />
+                {translations['auth.registerAsAdmin'] || 'Admin'}
+              </button>
+            </div>
           </div>
-        </div>
-        
+        )}
+
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <input
             type="hidden"
@@ -136,14 +155,14 @@ const RegisterPage: React.FC = () => {
               htmlFor="username" 
               className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
             >
-              {translations['auth.username']}
+              {translations['auth.username'] || 'Username'}
             </label>
             <input
               id="username"
               type="text"
               {...register('username')}
               className={`
-                w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500
+                w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500
                 dark:bg-gray-700 dark:border-gray-600 dark:text-white
                 ${errors.username ? 'border-red-500 dark:border-red-500' : 'border-gray-300'}
               `}
@@ -158,14 +177,14 @@ const RegisterPage: React.FC = () => {
               htmlFor="email" 
               className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
             >
-              {translations['auth.email']}
+              {translations['auth.email'] || 'Email'}
             </label>
             <input
               id="email"
               type="email"
               {...register('email')}
               className={`
-                w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500
+                w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500
                 dark:bg-gray-700 dark:border-gray-600 dark:text-white
                 ${errors.email ? 'border-red-500 dark:border-red-500' : 'border-gray-300'}
               `}
@@ -180,7 +199,7 @@ const RegisterPage: React.FC = () => {
               htmlFor="password" 
               className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
             >
-              {translations['auth.password']}
+              {translations['auth.password'] || 'Password'}
             </label>
             <div className="relative">
               <input
@@ -188,7 +207,7 @@ const RegisterPage: React.FC = () => {
                 type={showPassword ? 'text' : 'password'}
                 {...register('password')}
                 className={`
-                  w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500
+                  w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500
                   dark:bg-gray-700 dark:border-gray-600 dark:text-white
                   ${errors.password ? 'border-red-500 dark:border-red-500' : 'border-gray-300'}
                 `}
@@ -212,14 +231,14 @@ const RegisterPage: React.FC = () => {
                 htmlFor="secretKey" 
                 className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
               >
-                {translations['auth.secretKey']}
+                {translations['auth.secretKey'] || 'Admin Secret Key'}
               </label>
               <input
                 id="secretKey"
                 type="password"
                 {...register('secretKey')}
                 className={`
-                  w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500
+                  w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500
                   dark:bg-gray-700 dark:border-gray-600 dark:text-white
                   ${errors.secretKey ? 'border-red-500 dark:border-red-500' : 'border-gray-300'}
                 `}
@@ -227,9 +246,6 @@ const RegisterPage: React.FC = () => {
               {errors.secretKey && (
                 <p className="mt-1 text-sm text-red-500">{errors.secretKey.message}</p>
               )}
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                Admin secret key is required for admin registration (hint: try "admin123")
-              </p>
             </div>
           )}
           
@@ -238,17 +254,19 @@ const RegisterPage: React.FC = () => {
             fullWidth
             size="lg"
             isLoading={state.isLoading}
-            leftIcon={<UserPlus size={18} />}
+            leftIcon={registrationType === 'admin' ? <ShieldCheck size={18} /> : <UserPlus size={18} />}
           >
-            {translations['auth.register']}
+            {registrationType === 'admin'
+              ? translations['auth.registerAdmin'] || 'Register Admin'
+              : translations['auth.register'] || 'Register'}
           </Button>
         </form>
         
         <div className="mt-6 text-center">
           <p className="text-gray-600 dark:text-gray-300">
-            {translations['auth.haveAccount']} {' '}
-            <Link to="/login" className="text-purple-600 dark:text-purple-400 hover:underline font-medium">
-              {translations['auth.login']}
+            {translations['auth.haveAccount'] || 'Already have an account?'} {' '}
+            <Link to="/login" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+              {translations['auth.login'] || 'Login'}
             </Link>
           </p>
         </div>

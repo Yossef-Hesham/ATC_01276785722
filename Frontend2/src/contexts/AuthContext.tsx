@@ -1,11 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AuthState, User } from '../types';
-
-// Mock data - this would be replaced by actual API calls
-const MOCK_USERS = [
-  { id: '1', username: 'admin', email: 'admin@example.com', password: 'admin123', role: 'admin' },
-  { id: '2', username: 'user', email: 'user@example.com', password: 'user123', role: 'user' }
-];
 
 type AuthAction = 
   | { type: 'LOGIN_START' }
@@ -18,8 +13,8 @@ type AuthAction =
 
 interface AuthContextType {
   state: AuthState;
-  login: (username: string, password: string) => Promise<void>;
-  register: (username: string, email: string, password: string, secretKey?: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
+  register: (username: string, email: string, password: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -52,96 +47,92 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
+  
+  const navigate = useNavigate();
 
   // Check for stored auth on mount
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+    
+    if (token && user) {
       try {
-        const user = JSON.parse(storedUser);
-        dispatch({ type: 'LOGIN_SUCCESS', payload: user });
+        const parsedUser = JSON.parse(user);
+        dispatch({ type: 'LOGIN_SUCCESS', payload: parsedUser });
       } catch (error) {
+        localStorage.removeItem('token');
         localStorage.removeItem('user');
       }
     }
   }, []);
 
-  const login = async (username: string, password: string) => {
+  const login = async (email: string, password: string) => {
     dispatch({ type: 'LOGIN_START' });
     
-    // Simulate API call
     try {
-      // In a real app, this would be an API call
-      const user = MOCK_USERS.find(u => u.username === username && u.password === password);
-      
-      if (!user) {
-        throw new Error('Invalid credentials');
+      const response = await fetch('https://bookevent-production.up.railway.app/api/login/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
       }
+
+      // Assuming the API returns token and user data
+      const { token, user } = data;
       
-      const { password: _, ...userWithoutPassword } = user;
+      // Store token and user data
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
       
-      // Store in localStorage
-      localStorage.setItem('user', JSON.stringify(userWithoutPassword));
-      
-      dispatch({ 
-        type: 'LOGIN_SUCCESS', 
-        payload: userWithoutPassword as User 
-      });
+      dispatch({ type: 'LOGIN_SUCCESS', payload: user });
+      navigate('/');
     } catch (error) {
-      dispatch({ 
-        type: 'LOGIN_FAILURE', 
-        payload: error instanceof Error ? error.message : 'Login failed' 
-      });
+      const errorMessage = error instanceof Error ? error.message : 'Login failed';
+      dispatch({ type: 'LOGIN_FAILURE', payload: errorMessage });
     }
   };
 
-  const register = async (username: string, email: string, password: string, secretKey?: string) => {
+  const register = async (username: string, email: string, password: string) => {
     dispatch({ type: 'REGISTER_START' });
     
     try {
-      // Validate inputs
-      if (!username || !email || !password) {
-        throw new Error('All fields are required');
-      }
-      
-      // Check if email already exists
-      const emailExists = MOCK_USERS.some(u => u.email === email);
-      if (emailExists) {
-        throw new Error('Email already registered');
-      }
-      
-      // Check if username already exists
-      const usernameExists = MOCK_USERS.some(u => u.username === username);
-      if (usernameExists) {
-        throw new Error('Username already taken');
-      }
-      
-      // Determine role based on secret key
-      const role = secretKey === 'admin123' ? 'admin' : 'user';
-      
-      // In a real app, this would be an API call to create the user
-      const newUser: User = {
-        id: String(MOCK_USERS.length + 1),
-        username,
-        email,
-        role
-      };
-      
-      // Store in localStorage (simulating successful registration)
-      localStorage.setItem('user', JSON.stringify(newUser));
-      
-      dispatch({ type: 'REGISTER_SUCCESS', payload: newUser });
-    } catch (error) {
-      dispatch({ 
-        type: 'REGISTER_FAILURE', 
-        payload: error instanceof Error ? error.message : 'Registration failed' 
+      const response = await fetch('https://bookevent-production.up.railway.app/api/user/register/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, email, password }),
       });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Registration failed');
+      }
+
+      // Assuming the API returns user data after registration
+      const { user } = data;
+      
+      dispatch({ type: 'REGISTER_SUCCESS', payload: user });
+      navigate('/login');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Registration failed';
+      dispatch({ type: 'REGISTER_FAILURE', payload: errorMessage });
     }
   };
 
   const logout = () => {
+    localStorage.removeItem('token');
     localStorage.removeItem('user');
     dispatch({ type: 'LOGOUT' });
+    navigate('/login');
   };
 
   return (
