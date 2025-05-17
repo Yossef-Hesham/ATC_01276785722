@@ -43,6 +43,7 @@ CORS_ALLOWED_ORIGINS = [
     'https://localhost:8000',
 ]
 
+APPEND_SLASH = False
 
 CSRF_TRUSTED_ORIGINS = [
     'https://bookevent-production.up.railway.app',
